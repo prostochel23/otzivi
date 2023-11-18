@@ -11,10 +11,6 @@
 </#list>
 <b>Название товара: </b>${product.title}<br>
 <b>Описание товара: </b>${product.description}<br>
-<b>Автор: </b>${product.author}<br>
-<hr>
-<form action="/product/delete/${product.id}" method="post">
-    <input type="submit" value="Удалить товар"/>
-</form>
+<b>Автор: </b>${product.author.user.name}<br>
 </body>
 </html>
