@@ -52,7 +52,7 @@ public class ProductService {
     }
 
     public User getUserByPrincipal(Principal principal) {
-        if (principal != null) return new User();
+        if (principal == null) return new User();
         return userRepository.findByEmail(principal.getName());
     }
 

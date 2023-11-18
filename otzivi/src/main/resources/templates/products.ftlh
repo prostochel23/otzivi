@@ -17,7 +17,7 @@
 <hr>
 <h4>Отзывы со всей России</h4>
 <form action="/" method="get">
-    Поиск по названию объявления: <input type="text" name="title"><br>
+    Поиск по названию продукта: <input type="text" name="title"><br>
     <input type="submit" value="Поиск"/>
 </form>
 <#list products as product>

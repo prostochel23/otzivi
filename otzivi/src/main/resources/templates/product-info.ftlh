@@ -11,6 +11,6 @@
 </#list>
 <b>Название товара: </b>${product.title}<br>
 <b>Описание товара: </b>${product.description}<br>
-<b>Автор: </b>${product.author.user.name}<br>
+<b>Автор: </b>${product.user.name}<br>
 </body>
 </html>
