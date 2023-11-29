@@ -50,10 +50,20 @@ public class ProductService {
         productFromDb.setPreviewImageId(productFromDb.getImages().get(0).getId());
         productRepository.save(product);
     }
+    public void editProduct(Product product, Long id) {
+        // TODO: expand it to change images
+        Product oldProduct = getProductById(id);
+        oldProduct.setDescription(product.getDescription());
+        oldProduct.setTitle(product.getTitle());
+        log.info("Changing the Product. Title: {}; Author email: {}", oldProduct.getTitle(), oldProduct.getUser().getEmail());
+        productRepository.save(oldProduct);
+    }
 
     public User getUserByPrincipal(Principal principal) {
         if (principal == null) return new User();
-        return userRepository.findByEmail(principal.getName());
+        String name = principal.getName();
+        User user = this.userRepository.findByEmail(name);
+        return user;
     }
 
     private Image toImageEntity(MultipartFile file) throws IOException {

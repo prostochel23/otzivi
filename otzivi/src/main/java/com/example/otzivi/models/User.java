@@ -70,4 +70,11 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return active;
     }
+//    @Override
+//    public boolean equals(Object anotheruser)
+//    {
+//        if (this.getClass() != anotheruser.getClass())
+//            return false;
+//        return this.getId().equals(((User)anotheruser).getId());
+//    }
 }
