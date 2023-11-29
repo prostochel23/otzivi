@@ -1,5 +1,6 @@
 package com.example.otzivi.controller;
 
+import com.example.otzivi.models.Image;
 import com.example.otzivi.models.Product;
 import com.example.otzivi.models.User;
 import com.example.otzivi.repositories.ProductRepository;
@@ -14,10 +15,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.authority.*;
+import org.springframework.security.core.userdetails.UserDetails;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequiredArgsConstructor
@@ -33,34 +40,31 @@ public class ProductController {
         return "products";
     }
     @GetMapping("/product/{id}")
-    public String productInfo(@PathVariable Long id, Model model){
+    public String productInfo(@PathVariable Long id, Model model, Principal principal){
         Product product = productService.getProductById(id);
+        boolean edit_allowed = productService.getProductById(id).getUser().getEmail().equals(principal.getName()) ||
+                productService.getUserByPrincipal(principal).getRoles().contains(Role.ROLE_MODERATOR);
         model.addAttribute("product", product);
         model.addAttribute("images", product.getImages());
+        model.addAttribute("edit_allowed",edit_allowed);
         return "product-info";
     }
     @GetMapping("/product/update/{id}")
     public String productGetEdit(@PathVariable Long id, Principal principal, Model model){
-        Product product = this.productService.getProductById(id);
-        String first = product.getUser().getEmail();
-        String second = principal.getName();
-        //          productService.getUserByPrincipal(principal)
-//        model.addAttribute("user", user);
-        // TODO: переписать условие, чтобы проверял роли нормально
-        if (!(product.getUser().getEmail().equals(principal.getName())) )
-//                || !user.getRoles().contains(Role.ROLE_ADMIN))
+
+        Product product = productService.getProductById(id);
+        String author = product.getUser().getEmail();
+        if (!(author.equals(principal.getName()) ||
+                productService.getUserByPrincipal(principal).getRoles().contains(Role.ROLE_MODERATOR)))
             return "403";
         model.addAttribute("product", product);
         model.addAttribute("images", product.getImages());
         return "product-edit";
     }
     @PostMapping("/product/update/{id}")
-    public String productPostEdit(@PathVariable Long id, Principal principal, Product product){
-        // TODO: переписать условие, чтобы проверял роли нормально
-        Product anotherProduct = this.productService.getProductById(id);
-        String first = anotherProduct.getUser().getEmail();
-        String second = principal.getName();
-        if (!(first.equals(principal.getName())) )
+    public String productPostEdit(@PathVariable Long id, Principal principal, Product product, List<Image> images){
+        if (!(productService.getProductById(id).getUser().getEmail().equals(principal.getName()) ||
+                productService.getUserByPrincipal(principal).getRoles().contains(Role.ROLE_MODERATOR)))
             return "403";
         productService.editProduct(product, id);
         return "redirect:/product/{id}";

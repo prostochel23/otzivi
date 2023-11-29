@@ -11,7 +11,9 @@
 </#list>
 <b>Название товара: </b>${product.title}<br>
 <b>Описание товара: </b>${product.description}<br>
+<#if edit_allowed>
 <a href="/product/update/${product.id}">Изменить отзыв</a><br>
+</#if>
 <b>Автор: </b><a href="/user/${product.user.id}">${product.user.name}</a><br>
 
 </body>
