@@ -30,7 +30,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
-    private final ProductRepository productRepository;
     @GetMapping("/")
     public String products(@RequestParam(name = "title", required = false) String title,Principal principal, Model model){
         List<Product> products = productService.listProducts(title);
@@ -49,6 +48,7 @@ public class ProductController {
         model.addAttribute("edit_allowed",edit_allowed);
         return "product-info";
     }
+    // TODO: Make it in self controller, only moderator allowed to edit main post
     @GetMapping("/product/update/{id}")
     public String productGetEdit(@PathVariable Long id, Principal principal, Model model){
 

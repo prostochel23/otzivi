@@ -26,6 +26,14 @@
 <#list products as product>
     <div>
         <p><b>${product.title}</b> | <a href="/product/${product.id}">Подробнее...</a></p>
+		<div class="rating">
+        <!-- Display stars based on the product's rating -->
+        <span><#if (product.rating > 0)> &#9733; <#else> &#9734;</#if></span>
+        <span><#if (product.rating > 1)> &#9733; <#else> &#9734;</#if></span>
+		<span><#if (product.rating > 2)> &#9733; <#else> &#9734;</#if></span>
+		<span><#if (product.rating > 3)> &#9733; <#else> &#9734;</#if></span>
+		<span><#if (product.rating > 4)> &#9733; <#else> &#9734;</#if></span>
+		</div>
     </div>
     <#else>
     <h3>Товаров нет</h3>

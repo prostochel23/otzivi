@@ -30,6 +30,14 @@ public class Product {
     @JoinColumn
     private User user;
     private LocalDateTime dateOfCreated;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "product")
+    private List<Comment> comments = new ArrayList<>();
+    @Column(name = "totalEstimation")
+    private int totalEstimation;
+    @Column(name = "totalAmountOfEstimation")
+    private int totalAmountOfEstimation;
+    @Column(name = "rating")
+    private float rating;
     @PrePersist
     private void init(){
         dateOfCreated = LocalDateTime.now();

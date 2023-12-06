@@ -1,8 +1,10 @@
 package com.example.otzivi.services;
 
+import com.example.otzivi.models.Comment;
 import com.example.otzivi.models.Image;
 import com.example.otzivi.models.Product;
 import com.example.otzivi.models.User;
+import com.example.otzivi.repositories.CommentRepository;
 import com.example.otzivi.repositories.ProductRepository;
 import com.example.otzivi.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,22 +34,29 @@ public class ProductService {
         Image image1;
         Image image2;
         Image image3;
+        List<Image> images = new ArrayList<>();
         if (file1.getSize() != 0) {
             image1 = toImageEntity(file1);
             image1.setPreviewImage(true);
-            product.addImageToProduct(image1);
+            image1.setProduct(product);
+            images.add(image1);
         }
         if (file2.getSize() != 0) {
             image2 = toImageEntity(file2);
-            product.addImageToProduct(image2);
+            image2.setProduct(product);
+            images.add(image2);
         }
         if (file3.getSize() != 0) {
             image3 = toImageEntity(file3);
-            product.addImageToProduct(image3);
+            image3.setProduct(product);
+            images.add(image3);
         }
+        product.setImages(images);
+        product.setPreviewImageId(images.get(0).getId());
+        product.setRating(0);
+        product.setTotalEstimation(0);
+        product.setTotalAmountOfEstimation(0);
         log.info("Saving new Product. Title: {}; Author email: {}", product.getTitle(), product.getUser().getEmail());
-        Product productFromDb = productRepository.save(product);
-        productFromDb.setPreviewImageId(productFromDb.getImages().get(0).getId());
         productRepository.save(product);
     }
     public void editProduct(Product product, Long id) {
