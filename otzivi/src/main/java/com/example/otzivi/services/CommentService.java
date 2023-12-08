@@ -27,10 +27,9 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final ProductService productService;
 
-//    public List<Product> listProducts(String title) {
-//        if (title != null) return productRepository.findByTitle(title);
-//        return productRepository.findAll();
-//    }
+    public List<Comment> listComment(Product product) {
+       return commentRepository.findByProduct(product);
+    }
 
     public boolean saveComment(Principal principal, long productID, Comment comment) {
 
@@ -43,6 +42,7 @@ public class CommentService {
         comment.setUser(productService.getUserByPrincipal(principal));
         comment.setActive(true);
         List<Comment> comments = product.getComments();
+        comment.setProduct(product);
         comments.add(comment);
         product.setComments(comments);
         product.setTotalAmountOfEstimation(currentAmount);
@@ -75,29 +75,28 @@ public class CommentService {
         User user = productService.getUserByPrincipal(principal);
         Comment comment = commentRepository.findById(id).orElse(null);
         assert comment != null;
-        if (comment.getUser().getName().equals(user.getName()) || user.getRoles().contains(Role.ROLE_UPPER)) {
-            comment.setActive(false);
-            Product product = productService.getProductById(comment.getProduct().getId());
-            product.setTotalAmountOfEstimation(product.getTotalAmountOfEstimation() - 1);
-            product.setTotalEstimation(product.getTotalEstimation()-comment.getEstimation());
+        comment.setActive(false);
+        Product product = productService.getProductById(comment.getProduct().getId());
+        product.setTotalAmountOfEstimation(product.getTotalAmountOfEstimation() - 1);
+        product.setTotalEstimation(product.getTotalEstimation()-comment.getEstimation());
+        if (product.getTotalAmountOfEstimation() == 0)
+            product.setRating(0);
+        else
             product.setRating((float) product.getTotalEstimation() /product.getTotalAmountOfEstimation());
-            productRepository.save(product);
-            commentRepository.save(comment);
-        }
+        productRepository.save(product);
+        commentRepository.save(comment);
     }
     public void enableComment(Principal principal, Long id) {
         User user = productService.getUserByPrincipal(principal);
         Comment comment = commentRepository.findById(id).orElse(null);
         assert comment != null;
-        if (comment.getUser().getName().equals(user.getName()) || user.getRoles().contains(Role.ROLE_UPPER)) {
-            comment.setActive(true);
-            Product product = productService.getProductById(comment.getProduct().getId());
-            product.setTotalAmountOfEstimation(product.getTotalAmountOfEstimation() + 1);
-            product.setTotalEstimation(product.getTotalEstimation()+comment.getEstimation());
-            product.setRating((float) product.getTotalEstimation() /product.getTotalAmountOfEstimation());
-            productRepository.save(product);
-            commentRepository.save(comment);
-        }
+        comment.setActive(true);
+        Product product = productService.getProductById(comment.getProduct().getId());
+        product.setTotalAmountOfEstimation(product.getTotalAmountOfEstimation() + 1);
+        product.setTotalEstimation(product.getTotalEstimation()+comment.getEstimation());
+        product.setRating((float) product.getTotalEstimation() /product.getTotalAmountOfEstimation());
+        productRepository.save(product);
+        commentRepository.save(comment);
     }
     public void deleteComment(Principal principal, Long id){
         User user = productService.getUserByPrincipal(principal);

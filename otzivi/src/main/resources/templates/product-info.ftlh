@@ -49,16 +49,54 @@
     }
 </style>
 <h1>Otzivnik</h1><hr>
-<h4>Подробная информация о товаре</h4>
+<h3>Подробная информация о товаре</h3>
 <#list images as img>
     <img src="/images/${img.id}" height="60px"/><br><br>
 </#list>
 <b>Название товара: </b>${product.title}<br>
 <b>Описание товара: </b>${product.description}<br>
-<#if edit_allowed>
-<a href="/product/update/${product.id}">Изменить отзыв</a><br>
-</#if>
 <b>Автор: </b><a href="/user/${product.user.id}">${product.user.name}</a><br>
+<#if edit_allowed>
+<a href="/product/delete/${product.id}">Удалить товар</a><br>
+<a href="/product/update/${product.id}">Изменить описание товара</a><br>
+</#if>
+<hr>
+<h3>Отзывы на товар</h3>
+<#list comments as comment>
+<div>
+<#if comment.active>
+    <div>
+        <p><b>Автор:</b> <a href="/user/${comment.user.id}">${comment.user.name}</a><br></p>
+		 <p><b>Комментарий: </b>${comment.text}</p>
+		  <p><b>Оценка:</b> ${comment.estimation}</p>
+		  <#if hide_allowed>
+		  <a href="/hide/${product.id}">Скрыть комментарий</a>
+		  </#if>
+	</div>
+</#if>
+<#else>
+<h3>Отзывов нет</h3>
+</div>
+</#list>
+<br>
+<#if hide_allowed>
+<hr>
+<h3>Скрытые отзывы:</h3>
+<#list comments as comment>
+<#if !comment.active>
+    <div>
+        <p><b>Автор:</b> <a href="/user/${comment.user.id}">${comment.user.name}</a><br></p>
+		 <p><b>Комментарий: </b>${comment.text}</p>
+		  <p><b>Оценка:</b> ${comment.estimation}</p>
+		  <#if hide_allowed>
+		  <a href="/show/${product.id}">Показать отзыв</a>
+		  </#if>
+</#if>
+    <#else>
+    <h3>Отзывов нет</h3>
+</#list>
+</#if>
+<hr>
 <h4>Оставить отзыв на товар</h4>
 <form action="/makecomment/${product.id}" method="post">
     Ваше описание: <input type="text" name="text"><br><br>

@@ -1,9 +1,11 @@
 package com.example.otzivi.controller;
 
+import com.example.otzivi.models.Comment;
 import com.example.otzivi.models.Image;
 import com.example.otzivi.models.Product;
 import com.example.otzivi.models.User;
 import com.example.otzivi.repositories.ProductRepository;
+import com.example.otzivi.services.CommentService;
 import com.example.otzivi.services.ProductService;
 import com.example.otzivi.models.enums.Role;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
+    private final CommentService commentService;
     @GetMapping("/")
     public String products(@RequestParam(name = "title", required = false) String title,Principal principal, Model model){
         List<Product> products = productService.listProducts(title);
@@ -43,9 +46,13 @@ public class ProductController {
         Product product = productService.getProductById(id);
         boolean edit_allowed = productService.getProductById(id).getUser().getEmail().equals(principal.getName()) ||
                 productService.getUserByPrincipal(principal).getRoles().contains(Role.ROLE_MODERATOR);
+        boolean hide_allowed = productService.getUserByPrincipal(principal).getRoles().contains(Role.ROLE_UPPER);
+//        List<Comment> comments = commentService.listComment(product);
         model.addAttribute("product", product);
+        model.addAttribute("comments", product.getComments());
         model.addAttribute("images", product.getImages());
         model.addAttribute("edit_allowed",edit_allowed);
+        model.addAttribute("hide_allowed",hide_allowed);
         return "product-info";
     }
     // TODO: Make it in self controller, only moderator allowed to edit main post
