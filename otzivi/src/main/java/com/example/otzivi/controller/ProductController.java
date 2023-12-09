@@ -28,17 +28,25 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Set;
 
+import static com.example.otzivi.services.ProductService.categories;
+
 @Controller
 @RequiredArgsConstructor
 public class ProductController {
+    // TODO: Rewrite with check links
     private final ProductService productService;
     private final CommentService commentService;
     @GetMapping("/")
-    public String products(@RequestParam(name = "title", required = false) String title,Principal principal, Model model){
-        List<Product> products = productService.listProducts(title);
+    public String products(@RequestParam(name = "title", required = false) String title,
+                           @RequestParam(name = "category", required = false) String category,Principal principal, Model model){
+        if (categories.isEmpty())
+            productService.makeCategories();
+        List<Product> products = productService.listProducts(title,category);
         User user = productService.getUserByPrincipal(principal);
         model.addAttribute("products", products);
         model.addAttribute("user", user);
+        var a = categories.toArray();
+        model.addAttribute("categories", categories);
         return "products";
     }
     @GetMapping("/product/{id}")
@@ -78,8 +86,9 @@ public class ProductController {
     }
 
     @PostMapping("/product/create")
-    public String createProduct(@RequestParam("file1") MultipartFile file1, @RequestParam("file2") MultipartFile file2, @RequestParam("file3") MultipartFile file3, Product product, Principal principal) throws IOException {
-        productService.saveProduct(principal, product, file1, file2, file3);
+    public String createProduct(@RequestParam("file1") MultipartFile file1, @RequestParam("file2") MultipartFile file2, @RequestParam("file3") MultipartFile file3, Product product, Principal principal,
+                                @RequestParam("anotherCategory") String anotherCategory) throws IOException {
+        productService.saveProduct(principal, product, file1, file2, file3,anotherCategory);
         return "redirect:/";
     }
     @PostMapping("/product/delete/{id}")

@@ -4,6 +4,13 @@
     <title>Otzivnik</title>
 </head>
 <body>
+<script>
+function show()
+    {
+     document.getElementById("categories").style.display="none";
+     document.getElementById("anotherCategory").style.display="block";
+    }
+</script>
 <h1>Otzivnik</h1><hr>
 <#if user.email??>
     <h3>Имя пользователя: <i>${user.name}</i></h3>
@@ -21,6 +28,19 @@
 <h4>Отзывы со всей России</h4>
 <form action="/" method="get">
     Поиск по названию продукта: <input type="text" name="title"><br>
+    <input type="submit" value="Поиск"/>
+</form>
+<form action="/" method="get">
+    Поиск по категории:
+	
+    <select name="category">
+
+    <#list categories as category>
+    <option value="${category}">${category}</option>
+    <#else>
+    Без категорий пока
+    </#list>
+    </select>
     <input type="submit" value="Поиск"/>
 </form>
 <#list products as product>
@@ -47,6 +67,16 @@
         Первая фотография: <input type="file" name="file1"/><br><br>
         Вторая фотография: <input type="file" name="file2"/><br><br>
         Третья фотография: <input type="file" name="file3"/><br><br>
+        <select name="category">
+            <#list categories as category>
+            <option value="${category}">${category}</option>
+            <#else>
+            Без категорий пока
+            </#list>
+            </select>
+        <br>
+		Если вы не нашли вашу категорию, вы можете указать ее здесь:<br>
+        <input type="text" name="anotherCategory"><br>
         <input type="hidden" name="_csrf" value="${_csrf.token}">
         <input type="submit" value="Добавить отзыв"/>
     </form>

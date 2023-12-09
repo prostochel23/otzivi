@@ -9,6 +9,7 @@ import com.example.otzivi.repositories.ProductRepository;
 import com.example.otzivi.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,12 +25,24 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
 
-    public List<Product> listProducts(String title) {
+    static public List<String> categories = new ArrayList<>();
+
+    public List<Product> listProducts(String title, String category) {
         if (title != null) return productRepository.findByTitle(title);
+        else if (category != null) return productRepository.findByCategory(category);
         return productRepository.findAll();
     }
+    public void makeCategories()
+    {
+        for (Product product : productRepository.findAll())
+        {
+            String currentCategory = product.getCategory();
+            if (!categories.contains(currentCategory))
+                categories.add(currentCategory);
+        }
+    }
 
-    public void saveProduct(Principal principal, Product product, MultipartFile file1, MultipartFile file2, MultipartFile file3) throws IOException {
+    public void saveProduct(Principal principal, Product product, MultipartFile file1, MultipartFile file2, MultipartFile file3, String anotherCategory) throws IOException {
         product.setUser(getUserByPrincipal(principal));
         Image image1;
         Image image2;
@@ -50,6 +63,11 @@ public class ProductService {
             image3 = toImageEntity(file3);
             image3.setProduct(product);
             images.add(image3);
+        }
+        if (anotherCategory.length()!=0) {
+            product.setCategory(anotherCategory);
+            if (!categories.contains(anotherCategory))
+                categories.add(anotherCategory);
         }
         product.setImages(images);
         product.setPreviewImageId(images.get(0).getId());

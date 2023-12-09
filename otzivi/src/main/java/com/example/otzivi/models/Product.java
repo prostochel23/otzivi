@@ -42,5 +42,5 @@ public class Product {
     private void init(){
         dateOfCreated = LocalDateTime.now();
     }
-
+    private String category;
 }
