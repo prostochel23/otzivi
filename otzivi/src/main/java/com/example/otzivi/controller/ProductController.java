@@ -9,6 +9,7 @@ import com.example.otzivi.services.CommentService;
 import com.example.otzivi.services.ProductService;
 import com.example.otzivi.models.enums.Role;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +24,10 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.authority.*;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
@@ -38,13 +43,16 @@ public class ProductController {
     private final CommentService commentService;
     @GetMapping("/")
     public String products(@RequestParam(name = "title", required = false) String title,
-                           @RequestParam(name = "category", required = false) String category,Principal principal, Model model){
+                           @RequestParam(name = "category", required = false) String category, Principal principal, Model model,
+                           @PageableDefault(sort = {"rating"}, direction = Sort.Direction.DESC) Pageable pageable){
         if (categories.isEmpty())
             productService.makeCategories();
-        List<Product> products = productService.listProducts(title,category);
+        Page<Product> page = productService.listProducts(title,category,pageable);
         User user = productService.getUserByPrincipal(principal);
-        model.addAttribute("products", products);
+        model.addAttribute("products", page.getContent());
         model.addAttribute("user", user);
+        model.addAttribute("page", page);
+        model.addAttribute("url", "/");
         var a = categories.toArray();
         model.addAttribute("categories", categories);
         return "products";

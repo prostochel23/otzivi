@@ -69,6 +69,7 @@
         <p><b>Автор:</b> <a href="/user/${comment.user.id}">${comment.user.name}</a><br></p>
 		 <p><b>Комментарий: </b>${comment.text}</p>
 		  <p><b>Оценка:</b> ${comment.estimation}</p>
+		  <p><b>Категория::</b> ${comment.category}</p>
 		  <#if hide_allowed>
 		  <a href="/hide/${product.id}">Скрыть комментарий</a>
 		  </#if>

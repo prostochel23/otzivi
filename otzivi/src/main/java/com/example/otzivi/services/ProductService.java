@@ -10,6 +10,8 @@ import com.example.otzivi.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,10 +29,10 @@ public class ProductService {
 
     static public List<String> categories = new ArrayList<>();
 
-    public List<Product> listProducts(String title, String category) {
-        if (title != null) return productRepository.findByTitle(title);
-        else if (category != null) return productRepository.findByCategory(category);
-        return productRepository.findAll();
+    public Page<Product> listProducts(String title, String category, Pageable pageable) {
+        if (title != null) return productRepository.findByTitle(title,pageable);
+        else if (category != null) return productRepository.findByCategory(category,pageable);
+        return productRepository.findAll(pageable);
     }
     public void makeCategories()
     {
