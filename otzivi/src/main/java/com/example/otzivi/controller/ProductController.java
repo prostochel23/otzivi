@@ -60,10 +60,14 @@ public class ProductController {
     @GetMapping("/product/{id}")
     public String productInfo(@PathVariable Long id, Model model, Principal principal){
         Product product = productService.getProductById(id);
-        boolean edit_allowed = productService.getProductById(id).getUser().getEmail().equals(principal.getName()) ||
-                productService.getUserByPrincipal(principal).getRoles().contains(Role.ROLE_MODERATOR);
-        boolean hide_allowed = productService.getUserByPrincipal(principal).getRoles().contains(Role.ROLE_UPPER);
+        User user = productService.getUserByPrincipal(principal);
+        boolean edit_allowed = product.getUser().getEmail().equals(principal.getName()) ||
+                user.getRoles().contains(Role.ROLE_MODERATOR);
+        boolean hide_allowed = user.getRoles().contains(Role.ROLE_UPPER);
+        List<Product> favouriteProducts = user.getFavourites();
+        boolean alreadyLoved = favouriteProducts.contains(product);
 //        List<Comment> comments = commentService.listComment(product);
+        model.addAttribute("alreadyLoved", alreadyLoved);
         model.addAttribute("product", product);
         model.addAttribute("comments", product.getComments());
         model.addAttribute("images", product.getImages());
@@ -104,4 +108,15 @@ public class ProductController {
         productService.deleteProduct(id);
         return "redirect:/";
     }
+    @GetMapping("/product/addFavourite/{id}")
+    public String addFavouriteProduct(@PathVariable Long id, Principal principal){
+        productService.addFavouriteProduct(id, principal);
+        return "redirect:/product/{id}";
+    }
+    @GetMapping("/product/deleteFavourite/{id}")
+    public String deleteFavouriteProduct(@PathVariable Long id, Principal principal){
+        productService.deleteFavouriteProduct(id, principal);
+        return "redirect:/product/{id}";
+    }
+    // TODO : При удалении сделать обработчики существования записи
 }

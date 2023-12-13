@@ -4,7 +4,7 @@
     <title>Otzivnik</title>
 </head>
 <body>
-<h1>Ну, здарово. Ты залогин</h1><hr>
+<h1>Ну, здарово. Ты залогинен</h1><hr>
 
 </body>
 </html>

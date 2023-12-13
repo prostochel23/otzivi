@@ -112,4 +112,21 @@ public class ProductService {
     public Product getProductById(Long id) {
        return productRepository.findById(id).orElse(null);
     }
+    public void addFavouriteProduct(Long id, Principal principal)
+    {
+        User user = userRepository.findByEmail(principal.getName());
+        List<Product> oldList = user.getFavourites();
+        oldList.add(getProductById(id));
+        user.setFavourites(oldList);
+        userRepository.save(user);
+    }
+    public void deleteFavouriteProduct(Long id, Principal principal)
+    {
+        User user = userRepository.findByEmail(principal.getName());
+        List<Product> oldList = user.getFavourites();
+        Product productToDelete = getProductById(id);
+        oldList.remove(productToDelete);
+        user.setFavourites(oldList);
+        userRepository.save(user);
+    }
 }

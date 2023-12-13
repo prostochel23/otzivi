@@ -55,7 +55,13 @@
 </#list>
 <b>Название товара: </b>${product.title}<br>
 <b>Описание товара: </b>${product.description}<br>
+<b>Категория:</b> ${product.category}<br>
 <b>Автор: </b><a href="/user/${product.user.id}">${product.user.name}</a><br>
+<#if !alreadyLoved>
+<a href="/product/addFavourite/${product.id}">Добавить товар в избранное</a><br>
+<#else>
+<a href="/product/deleteFavourite/${product.id}">Убрать товар из избранного</a><br>
+</#if>
 <#if edit_allowed>
 <a href="/product/delete/${product.id}">Удалить товар</a><br>
 <a href="/product/update/${product.id}">Изменить описание товара</a><br>
@@ -69,7 +75,6 @@
         <p><b>Автор:</b> <a href="/user/${comment.user.id}">${comment.user.name}</a><br></p>
 		 <p><b>Комментарий: </b>${comment.text}</p>
 		  <p><b>Оценка:</b> ${comment.estimation}</p>
-		  <p><b>Категория::</b> ${comment.category}</p>
 		  <#if hide_allowed>
 		  <a href="/hide/${product.id}">Скрыть комментарий</a>
 		  </#if>
