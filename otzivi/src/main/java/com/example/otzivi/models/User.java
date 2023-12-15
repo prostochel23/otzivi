@@ -19,6 +19,10 @@ public class User implements UserDetails {
     private Long id;
     @Column(name = "email", unique = true)
     private String email;
+    @Column(name = "secret")
+    private String secret;
+    @Column(name = "mfaEnabled")
+    private boolean mfaEnabled;
     @Column(name = "name")
     private String name;
     @Column(name = "active")

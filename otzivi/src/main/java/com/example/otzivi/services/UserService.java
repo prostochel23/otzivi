@@ -27,6 +27,8 @@ public class UserService {
         user.setFavourites(new ArrayList<>());
         user.setActive(true);
         user.getRoles().add(Role.ROLE_USER);
+        user.setMfaEnabled(false);
+        user.setSecret("");
         log.info("Saving new User with email: {}", email);
         userRepository.save(user);
         return true;
