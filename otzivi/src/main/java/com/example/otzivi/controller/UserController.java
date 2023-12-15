@@ -1,6 +1,7 @@
 package com.example.otzivi.controller;
 
 import com.example.otzivi.models.User;
+import com.example.otzivi.services.EmailService;
 import com.example.otzivi.services.ProductService;
 import com.example.otzivi.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -11,12 +12,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.security.Principal;
+import java.util.regex.Pattern;
 
 @Controller
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
     private final ProductService productService;
+    private final EmailService emailService;
     @GetMapping("/login")
     public String login() {
         return "login";
@@ -30,11 +33,32 @@ public class UserController {
 
     @PostMapping("/registration")
     public String createUser(User user, Model model) {
-        if (!userService.createUser(user)) {
+        String[] patterns = new String[] {"\\W","\\d","[a-zA-Z]"};
+        String password = user.getPassword();
+        if (password.length() < 6)
+        {
+            model.addAttribute("errorMessage", "Длина пароля должна быть больше 6 символов");
+            return "registration";
+        }
+        for (String pattern : patterns)
+        {
+            if (!Pattern.compile(pattern).matcher(password).matches()) {
+                model.addAttribute("errorMessage", "Пароль должен содержать буквенные, цифровые и специальные символы");
+                return "registration";
+            }
+        }
+        Long id = userService.createUser(user);
+        if (id == -1) {
             model.addAttribute("errorMessage", "Пользователь с email: " + user.getEmail() + " уже существует");
             return "registration";
         }
-        return "redirect:/login";
+        model.addAttribute("result", false);
+        return "redirect:/hello";
+    }
+    @GetMapping("/confirm/{id}/{code}")
+    public String postConfirm(Model model,@PathVariable("code") String code,@PathVariable("user") Long id) {
+        model.addAttribute("result", userService.confirmUser(id,code));
+        return "/hello";
     }
     @GetMapping("/user/{user}")
     public String userInfo(@PathVariable("user") User user, Model model){

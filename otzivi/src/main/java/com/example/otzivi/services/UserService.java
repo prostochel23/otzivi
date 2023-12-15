@@ -17,19 +17,27 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
-    public boolean createUser(User user){
+    public Long createUser(User user){
         String email = user.getEmail();
-        if (userRepository.findByEmail(email) != null) return false;
+        if (userRepository.findByEmail(email) != null) return (long) -1;
 
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
         user.setFavourites(new ArrayList<>());
-        user.setActive(true);
+        user.setActive(false);
         user.getRoles().add(Role.ROLE_USER);
         user.setMfaEnabled(false);
-        user.setSecret("");
+        user.setSecret(emailService.sendSimpleMessage(user.getEmail(),userRepository.save(user).getId()));
         log.info("Saving new User with email: {}", email);
+        return userRepository.save(user).getId();
+    }
+    public boolean confirmUser(Long id, String code)
+    {
+        User user = userRepository.findById(id).orElse(null);
+        if (user.getSecret().equals(code))
+            user.setActive(true);
         userRepository.save(user);
         return true;
     }
