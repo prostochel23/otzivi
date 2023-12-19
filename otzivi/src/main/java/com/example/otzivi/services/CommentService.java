@@ -55,7 +55,8 @@ public class CommentService {
     }
     public void editComment(Comment comment, Long id) {
         Comment oldComment = commentRepository.findById(id).orElse(null);
-        assert oldComment != null;
+        if (oldComment == null)
+            return;
         oldComment.setText(comment.getText());
         if (0 > comment.getEstimation() || comment.getEstimation() > 5)
             return;
@@ -74,8 +75,8 @@ public class CommentService {
     public void disableComment(Principal principal, Long id) {
         User user = productService.getUserByPrincipal(principal);
         Comment comment = commentRepository.findById(id).orElse(null);
-        assert comment != null;
-        comment.setActive(false);
+        if (comment == null)
+            return;
         Product product = productService.getProductById(comment.getProduct().getId());
         product.setTotalAmountOfEstimation(product.getTotalAmountOfEstimation() - 1);
         product.setTotalEstimation(product.getTotalEstimation()-comment.getEstimation());
@@ -89,7 +90,8 @@ public class CommentService {
     public void enableComment(Principal principal, Long id) {
         User user = productService.getUserByPrincipal(principal);
         Comment comment = commentRepository.findById(id).orElse(null);
-        assert comment != null;
+        if (comment == null)
+            return;
         comment.setActive(true);
         Product product = productService.getProductById(comment.getProduct().getId());
         product.setTotalAmountOfEstimation(product.getTotalAmountOfEstimation() + 1);
@@ -101,7 +103,8 @@ public class CommentService {
     public void deleteComment(Principal principal, Long id){
         User user = productService.getUserByPrincipal(principal);
         Comment comment = commentRepository.findById(id).orElse(null);
-        assert comment != null;
+        if (comment == null)
+            return;
         if (comment.getUser().getName().equals(user.getName()) || user.getRoles().contains(Role.ROLE_UPPER)) {
             disableComment(principal, id);
             commentRepository.deleteById(id);

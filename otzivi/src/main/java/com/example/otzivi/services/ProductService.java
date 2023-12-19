@@ -42,6 +42,8 @@ public class ProductService {
             if (!categories.contains(currentCategory))
                 categories.add(currentCategory);
         }
+        if (categories.isEmpty())
+            categories.add("Общее");
     }
 
     public void saveProduct(Principal principal, Product product, MultipartFile file1, MultipartFile file2, MultipartFile file3, String anotherCategory) throws IOException {
@@ -80,7 +82,6 @@ public class ProductService {
         productRepository.save(product);
     }
     public void editProduct(Product product, Long id) {
-        // TODO: expand it to change images
         Product oldProduct = getProductById(id);
         oldProduct.setDescription(product.getDescription());
         oldProduct.setTitle(product.getTitle());
@@ -91,8 +92,7 @@ public class ProductService {
     public User getUserByPrincipal(Principal principal) {
         if (principal == null) return new User();
         String name = principal.getName();
-        User user = this.userRepository.findByEmail(name);
-        return user;
+        return this.userRepository.findByEmail(name);
     }
 
     private Image toImageEntity(MultipartFile file) throws IOException {

@@ -21,8 +21,6 @@ public class User implements UserDetails {
     private String email;
     @Column(name = "confirmToken")
     private String confirmToken;
-    @Column(name = "mfaEnabled")
-    private boolean mfaEnabled;
     @Column(name = "name")
     private String name;
     @Column(name = "active")
@@ -38,7 +36,7 @@ public class User implements UserDetails {
     private Set<Role> roles = new HashSet<>();
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
     private List<Product> products = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Product> favourites = new ArrayList<>();
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
     private List<Comment> comments = new ArrayList<>();

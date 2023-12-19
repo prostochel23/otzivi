@@ -2,12 +2,14 @@ package com.example.otzivi.services;
 
 import com.example.otzivi.models.User;
 import com.example.otzivi.models.enums.Role;
+import com.example.otzivi.repositories.ProductRepository;
 import com.example.otzivi.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -18,6 +20,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final ProductService productService;
 
     public Long createUser(User user){
         String email = user.getEmail();
@@ -26,21 +29,46 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
         user.setFavourites(new ArrayList<>());
-        user.setActive(false);
-        user.getRoles().add(Role.ROLE_USER);
-        user.setMfaEnabled(false);
-        user.setConfirmToken(emailService.sendSimpleMessage(user.getEmail(),userRepository.save(user).getId()));
+        user.setActive(true);
+        user.getRoles().add(Role.ROLE_ADMIN);
+        user.setConfirmToken(emailService.sendConfirmMessage(user.getEmail(),userRepository.save(user).getId()));
         log.info("Saving new User with email: {}", email);
         return userRepository.save(user).getId();
+    }
+    public boolean tryRecoverPass(String email){
+        User user = userRepository.findByEmail(email);
+        if (user == null)
+            return false;
+        user.setConfirmToken(emailService.sendRecoveryMessage(user.getEmail(),userRepository.save(user).getId()));
+        return true;
+    }
+    public boolean recoveryPass(Long id, String code, String password)
+    {
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null || user.getConfirmToken().equals(""))
+            return false;
+        if (user.getConfirmToken().equals(code)) {
+            user.setPassword(passwordEncoder.encode(password));
+            user.setConfirmToken("");
+            userRepository.save(user);
+            return true;
+        }
+        return false;
     }
     public boolean confirmUser(Long id, String code)
     {
         User user = userRepository.findById(id).orElse(null);
-        if (user.getConfirmToken().equals(code))
+        if (user == null || user.getConfirmToken().equals(""))
+            return false;
+        if (user.getConfirmToken().equals(code)) {
             user.setActive(true);
-        userRepository.save(user);
-        return true;
+            user.setConfirmToken("");
+            userRepository.save(user);
+            return true;
+        }
+        return false;
     }
+
     public List<User> list(){
         return userRepository.findAll();
     }

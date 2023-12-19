@@ -3,8 +3,6 @@ package com.example.otzivi.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -22,13 +20,23 @@ import static java.lang.Math.abs;
 public class EmailService {
 
 
-    public String sendSimpleMessage(String to, Long id) {
+    public String sendConfirmMessage(String to, Long id) {
         String code = generateCode();
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("vfvfigfgfiz@gmail.com");
         message.setTo(to);
         message.setSubject("Регистрация на Otzivi");
         message.setText("Ваша ссылка для подтверждения регистрации: http://localhost:8080/confirm/"+id+"/" + code);
+        getJavaMailSender().send(message);
+        return code;
+    }
+    public String sendRecoveryMessage(String to, Long id) {
+        String code = generateCode();
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("vfvfigfgfiz@gmail.com");
+        message.setTo(to);
+        message.setSubject("Восстановление на Otzivi");
+        message.setText("Ваша ссылка восстановления пароля: http://localhost:8080/recovery/"+id+"/" + code);
         getJavaMailSender().send(message);
         return code;
     }

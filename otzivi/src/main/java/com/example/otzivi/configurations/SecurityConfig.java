@@ -4,6 +4,8 @@ import com.example.otzivi.services.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,12 +26,14 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
     @Bean
-    protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/", "/product/**", "/images/**", "/registration","/user/**").permitAll()
+                        .requestMatchers("/", "/product/**", "/images/**", "/registration","/user/**","/debug").permitAll()
+                        .requestMatchers("/debug").permitAll()
                         .requestMatchers("/hello").permitAll()
                         .requestMatchers("/confirm/**").permitAll()
+                        .requestMatchers("/recovery/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form
@@ -61,6 +65,13 @@ public class SecurityConfig {
         String hierarchy = "ROLE_ADMIN > ROLE_MODERATOR \n ROLE_MODERATOR > ROLE_UPPER \n ROLE_UPPER > ROLE_USER";
         roleHierarchy.setHierarchy(hierarchy);
         return roleHierarchy;
+    }
+    @Bean
+    static MethodSecurityExpressionHandler methodSecurityExpressionHandler(RoleHierarchy roleHierarchy) {
+
+        DefaultMethodSecurityExpressionHandler expressionHandler = new DefaultMethodSecurityExpressionHandler();
+        expressionHandler.setRoleHierarchy(roleHierarchy);
+        return expressionHandler;
     }
 
     @Bean

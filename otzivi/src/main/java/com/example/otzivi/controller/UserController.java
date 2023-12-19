@@ -1,6 +1,7 @@
 package com.example.otzivi.controller;
 
 import com.example.otzivi.models.User;
+import com.example.otzivi.repositories.UserRepository;
 import com.example.otzivi.services.EmailService;
 import com.example.otzivi.services.ProductService;
 import com.example.otzivi.services.UserService;
@@ -17,6 +18,7 @@ import java.util.regex.Pattern;
 @Controller
 @RequiredArgsConstructor
 public class UserController {
+    private final UserRepository userRepository;
     private final UserService userService;
     private final ProductService productService;
     private final EmailService emailService;
@@ -60,6 +62,40 @@ public class UserController {
         model.addAttribute("result", userService.confirmUser(id,code));
         return "/hello";
     }
+    @GetMapping("/recovery")
+    public String getRecovery(Model model) {
+        model.addAttribute("step", 1);
+        return "/recovery";
+    }
+    @PostMapping("/recovery")
+    public String PostRecovery(Model model,String email) {
+        if (!userService.tryRecoverPass(email))
+        {
+            model.addAttribute("errorMessage", "Пользователь с email: " + email + " не существует");
+            model.addAttribute("step", -1);
+            return "/recovery";
+        }
+        model.addAttribute("step", 2);
+        return "/recovery";
+    }
+    @GetMapping("/recovery/{id}/{code}")
+    public String getRecoveryHard(Model model,@PathVariable("code") String code,@PathVariable("id") Long id) {
+        model.addAttribute("step", 3);
+        model.addAttribute("id", id);
+        model.addAttribute("code", code);
+        return "/recovery";
+    }
+    @PostMapping("/recovery/{id}/{code}")
+    public String postRecoveryHard(Model model,@PathVariable("code") String code,@PathVariable("id") Long id,String password) {
+        if (!userService.recoveryPass(id,code,password))
+        {
+            model.addAttribute("errorMessage", "Ошибка ссылки");
+            model.addAttribute("step", -1);
+            return "/recovery";
+        }
+        model.addAttribute("step", 4);
+        return "/recovery";
+    }
     @GetMapping("/user/{user}")
     public String userInfo(@PathVariable("user") User user, Model model){
         model.addAttribute("user", user);
@@ -67,10 +103,15 @@ public class UserController {
         return "user-info";
     }
     @GetMapping("/myfavourites")
-    public String usetFavourite(Model model, Principal principal){
+    public String userFavourite(Model model, Principal principal){
         User user = productService.getUserByPrincipal(principal);
         model.addAttribute("products", user.getFavourites());
         model.addAttribute("user", user);
         return "user-favourites";
+    }
+    @GetMapping("/debug")
+    public String debug(Model model, Principal principal){
+        model.addAttribute("debug-info", principal != null);
+        return "debug";
     }
 }

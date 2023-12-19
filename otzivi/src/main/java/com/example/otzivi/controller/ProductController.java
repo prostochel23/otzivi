@@ -61,12 +61,10 @@ public class ProductController {
     public String productInfo(@PathVariable Long id, Model model, Principal principal){
         Product product = productService.getProductById(id);
         User user = productService.getUserByPrincipal(principal);
-        boolean edit_allowed = product.getUser().getEmail().equals(principal.getName()) ||
-                user.getRoles().contains(Role.ROLE_MODERATOR);
+        boolean edit_allowed = user.getRoles().contains(Role.ROLE_MODERATOR);
         boolean hide_allowed = user.getRoles().contains(Role.ROLE_UPPER);
         List<Product> favouriteProducts = user.getFavourites();
         boolean alreadyLoved = favouriteProducts.contains(product);
-//        List<Comment> comments = commentService.listComment(product);
         model.addAttribute("alreadyLoved", alreadyLoved);
         model.addAttribute("product", product);
         model.addAttribute("comments", product.getComments());
@@ -75,27 +73,7 @@ public class ProductController {
         model.addAttribute("hide_allowed",hide_allowed);
         return "product-info";
     }
-    // TODO: Make it in self controller, only moderator allowed to edit main post
-    @GetMapping("/product/update/{id}")
-    public String productGetEdit(@PathVariable Long id, Principal principal, Model model){
 
-        Product product = productService.getProductById(id);
-        String author = product.getUser().getEmail();
-        if (!(author.equals(principal.getName()) ||
-                productService.getUserByPrincipal(principal).getRoles().contains(Role.ROLE_MODERATOR)))
-            return "403";
-        model.addAttribute("product", product);
-        model.addAttribute("images", product.getImages());
-        return "product-edit";
-    }
-    @PostMapping("/product/update/{id}")
-    public String productPostEdit(@PathVariable Long id, Principal principal, Product product, List<Image> images){
-        if (!(productService.getProductById(id).getUser().getEmail().equals(principal.getName()) ||
-                productService.getUserByPrincipal(principal).getRoles().contains(Role.ROLE_MODERATOR)))
-            return "403";
-        productService.editProduct(product, id);
-        return "redirect:/product/{id}";
-    }
 
     @PostMapping("/product/create")
     public String createProduct(@RequestParam("file1") MultipartFile file1, @RequestParam("file2") MultipartFile file2, @RequestParam("file3") MultipartFile file3, Product product, Principal principal,
@@ -103,11 +81,7 @@ public class ProductController {
         productService.saveProduct(principal, product, file1, file2, file3,anotherCategory);
         return "redirect:/";
     }
-    @PostMapping("/product/delete/{id}")
-    public String deleteProduct(@PathVariable Long id){
-        productService.deleteProduct(id);
-        return "redirect:/";
-    }
+
     @GetMapping("/product/addFavourite/{id}")
     public String addFavouriteProduct(@PathVariable Long id, Principal principal){
         productService.addFavouriteProduct(id, principal);
