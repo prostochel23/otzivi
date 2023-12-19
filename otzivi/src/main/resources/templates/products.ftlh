@@ -12,6 +12,7 @@
 <h1>Otzivnik</h1><hr>
 <#if user.email??>
     <h3>Имя пользователя: <i>${user.name}</i></h3>
+    <a href="/myfavourites">Избранные товары</a>
     <form action="/logout" method="post">
         <input type="hidden" name="_csrf" value="${_csrf.token}">
         <input type="submit" value="Выйти"/>

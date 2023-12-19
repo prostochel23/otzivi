@@ -29,14 +29,14 @@ public class UserService {
         user.setActive(false);
         user.getRoles().add(Role.ROLE_USER);
         user.setMfaEnabled(false);
-        user.setSecret(emailService.sendSimpleMessage(user.getEmail(),userRepository.save(user).getId()));
+        user.setConfirmToken(emailService.sendSimpleMessage(user.getEmail(),userRepository.save(user).getId()));
         log.info("Saving new User with email: {}", email);
         return userRepository.save(user).getId();
     }
     public boolean confirmUser(Long id, String code)
     {
         User user = userRepository.findById(id).orElse(null);
-        if (user.getSecret().equals(code))
+        if (user.getConfirmToken().equals(code))
             user.setActive(true);
         userRepository.save(user);
         return true;

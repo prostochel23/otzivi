@@ -42,7 +42,7 @@ public class UserController {
         }
         for (String pattern : patterns)
         {
-            if (!Pattern.compile(pattern).matcher(password).matches()) {
+            if (!Pattern.compile(pattern).matcher(password).find()) {
                 model.addAttribute("errorMessage", "Пароль должен содержать буквенные, цифровые и специальные символы");
                 return "registration";
             }
@@ -56,7 +56,7 @@ public class UserController {
         return "redirect:/hello";
     }
     @GetMapping("/confirm/{id}/{code}")
-    public String postConfirm(Model model,@PathVariable("code") String code,@PathVariable("user") Long id) {
+    public String postConfirm(Model model,@PathVariable("code") String code,@PathVariable("id") Long id) {
         model.addAttribute("result", userService.confirmUser(id,code));
         return "/hello";
     }

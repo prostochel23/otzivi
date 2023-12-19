@@ -28,6 +28,8 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/", "/product/**", "/images/**", "/registration","/user/**").permitAll()
+                        .requestMatchers("/hello").permitAll()
+                        .requestMatchers("/confirm/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin((form) -> form

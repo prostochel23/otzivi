@@ -4,7 +4,7 @@
     <title>Otzivnik</title>
 </head>
 <body>
-<h1>Otzivnik</h1><hr>
+<h1>Otzivnik | Избранное</h1><hr>
 <#if user.email??>
     <h3>Имя пользователя: <i>${user.name}</i></h3>
 </#if>

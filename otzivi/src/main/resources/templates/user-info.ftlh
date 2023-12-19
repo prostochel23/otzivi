@@ -8,9 +8,11 @@
 <h3>Подробная информация о пользователе ${user.name}</h3>
 <b>Email: </b> ${user.email}<br>
 <h4>Отзывы пользователя ${user.name}</h4>
-<#list products as product>
+<#list products as comment>
     <div>
-        <p><b>${product.title}</b> | <a href="/product/${product.id}">Подробнее...</a></p>
+        <p><b>${comment.product.title}</b> | <a href="/product/${comment.product.id}">Подробнее...</a></p>
+        <p><b>Текст отзыва:</b> | ${comment.text}</p>
+        <p><b>Оценка:</b> | ${comment.estimation}</p>
     </div>
     <#else>
     <h3>Отзывов нет</h3>

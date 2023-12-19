@@ -19,8 +19,8 @@ public class User implements UserDetails {
     private Long id;
     @Column(name = "email", unique = true)
     private String email;
-    @Column(name = "secret")
-    private String secret;
+    @Column(name = "confirmToken")
+    private String confirmToken;
     @Column(name = "mfaEnabled")
     private boolean mfaEnabled;
     @Column(name = "name")
