@@ -29,8 +29,9 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
         user.setFavourites(new ArrayList<>());
-        user.setActive(true);
-        user.getRoles().add(Role.ROLE_ADMIN);
+        // TODO: Перед защитой не забудь сделать по человечески
+        user.setActive(false);
+        user.getRoles().add(Role.ROLE_USER);
         user.setConfirmToken(emailService.sendConfirmMessage(user.getEmail(),userRepository.save(user).getId()));
         log.info("Saving new User with email: {}", email);
         return userRepository.save(user).getId();

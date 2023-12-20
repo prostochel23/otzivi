@@ -55,7 +55,7 @@ public class UserController {
             return "registration";
         }
         model.addAttribute("result", false);
-        return "redirect:/hello";
+        return "/hello";
     }
     @GetMapping("/confirm/{id}/{code}")
     public String postConfirm(Model model,@PathVariable("code") String code,@PathVariable("id") Long id) {
