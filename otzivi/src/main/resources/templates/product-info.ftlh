@@ -76,7 +76,7 @@
 		 <p><b>Комментарий: </b>${comment.text}</p>
 		  <p><b>Оценка:</b> ${comment.estimation}</p>
 		  <#if hide_allowed>
-		  <a href="/hide/${product.id}">Скрыть комментарий</a>
+		  <a href="/hide/${comment.id}">Скрыть комментарий</a>
 		  </#if>
 	</div>
 </#if>
@@ -95,7 +95,7 @@
 		 <p><b>Комментарий: </b>${comment.text}</p>
 		  <p><b>Оценка:</b> ${comment.estimation}</p>
 		  <#if hide_allowed>
-		  <a href="/show/${product.id}">Показать отзыв</a>
+		  <a href="/show/${comment.id}">Показать отзыв</a>
 		  </#if>
 </#if>
     <#else>

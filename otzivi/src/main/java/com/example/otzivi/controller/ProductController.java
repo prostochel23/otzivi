@@ -4,6 +4,7 @@ import com.example.otzivi.models.Comment;
 import com.example.otzivi.models.Image;
 import com.example.otzivi.models.Product;
 import com.example.otzivi.models.User;
+import com.example.otzivi.repositories.CommentRepository;
 import com.example.otzivi.repositories.ProductRepository;
 import com.example.otzivi.services.CommentService;
 import com.example.otzivi.services.ProductService;
@@ -41,6 +42,7 @@ public class ProductController {
     // TODO: Rewrite with check links
     private final ProductService productService;
     private final CommentService commentService;
+    private final CommentRepository commentRepository;
     @GetMapping("/")
     public String products(@RequestParam(name = "title", required = false) String title,
                            @RequestParam(name = "category", required = false) String category, Principal principal, Model model,
@@ -67,7 +69,7 @@ public class ProductController {
         boolean alreadyLoved = favouriteProducts.contains(product);
         model.addAttribute("alreadyLoved", alreadyLoved);
         model.addAttribute("product", product);
-        model.addAttribute("comments", product.getComments());
+        model.addAttribute("comments", commentRepository.findByProduct(product));
         model.addAttribute("images", product.getImages());
         model.addAttribute("edit_allowed",edit_allowed);
         model.addAttribute("hide_allowed",hide_allowed);
@@ -90,7 +92,7 @@ public class ProductController {
     @GetMapping("/product/deleteFavourite/{id}")
     public String deleteFavouriteProduct(@PathVariable Long id, Principal principal){
         productService.deleteFavouriteProduct(id, principal);
-        return "redirect:/product/{id}";
+        return "redirect:/myfavourites";
     }
     // TODO : При удалении сделать обработчики существования записи
 }

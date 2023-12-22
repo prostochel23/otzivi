@@ -31,7 +31,7 @@ public class Product {
     private User user;
 
     private LocalDateTime dateOfCreated;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "product")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Comment> comments = new ArrayList<>();
     @Column(name = "totalEstimation")
     private int totalEstimation;

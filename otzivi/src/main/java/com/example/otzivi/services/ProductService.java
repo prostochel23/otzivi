@@ -42,7 +42,7 @@ public class ProductService {
             if (!categories.contains(currentCategory))
                 categories.add(currentCategory);
         }
-        if (categories.isEmpty())
+        if (!categories.contains("Общее"))
             categories.add("Общее");
     }
 

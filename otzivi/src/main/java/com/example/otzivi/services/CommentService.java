@@ -81,6 +81,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(id).orElse(null);
         if (comment == null)
             return;
+        comment.setActive(false);
         Product product = productService.getProductById(comment.getProduct().getId());
         product.setTotalAmountOfEstimation(product.getTotalAmountOfEstimation() - 1);
         product.setTotalEstimation(product.getTotalEstimation()-comment.getEstimation());
