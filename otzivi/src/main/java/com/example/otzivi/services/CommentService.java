@@ -39,18 +39,22 @@ public class CommentService {
         int currentScore = product.getTotalEstimation() + comment.getEstimation();
         int currentAmount = product.getTotalAmountOfEstimation() + 1;
         float currentRating = (float) currentScore /currentAmount;
-        comment.setUser(productService.getUserByPrincipal(principal));
-        comment.setActive(true);
-        List<Comment> comments = product.getComments();
-        comment.setProduct(product);
-        comments.add(comment);
-        product.setComments(comments);
+        Comment newcomment = new Comment();
+        newcomment.setUser(productService.getUserByPrincipal(principal));
+        newcomment.setActive(true);
+        newcomment.setText(comment.getText());
+        newcomment.setEstimation(comment.getEstimation());
+
+//        List<Comment> comments = product.getComments();
+        newcomment.setProduct(product);
+//        comments.add(comment);
+//        product.setComments(comments);
         product.setTotalAmountOfEstimation(currentAmount);
         product.setTotalEstimation(currentScore);
         product.setRating(Math.round(currentRating));
         productRepository.save(product);
-//        commentRepository.save(comment);
-        log.info("Saving new Comment. Post's title: {}; Author email: {}", product.getTitle(), comment.getUser().getEmail());
+        commentRepository.save(newcomment);
+        log.info("Saving new Comment. Post's title: {}; Author email: {}", product.getTitle(), newcomment.getUser().getEmail());
         return true;
     }
     public void editComment(Comment comment, Long id) {

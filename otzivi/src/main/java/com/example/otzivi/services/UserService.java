@@ -31,7 +31,7 @@ public class UserService {
         user.setFavourites(new ArrayList<>());
         // TODO: Перед защитой не забудь сделать по человечески
         user.setActive(false);
-        user.getRoles().add(Role.ROLE_USER);
+        user.getRoles().add(Role.ROLE_ADMIN);
         user.setConfirmToken(emailService.sendConfirmMessage(user.getEmail(),userRepository.save(user).getId()));
         log.info("Saving new User with email: {}", email);
         return userRepository.save(user).getId();
