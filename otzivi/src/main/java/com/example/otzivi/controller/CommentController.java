@@ -34,14 +34,14 @@ public class CommentController {
     //@PreAuthorize("hasAuthority('ROLE_UPPER')")
     @GetMapping("/hide/{id}")
     public String hideComment(@PathVariable Long id, Principal principal){
-        commentService.disableComment(principal,id);
-        return "redirect:/product/{id}";
+        Long productId = commentService.disableComment(principal,id);
+        return "redirect:/product/"+productId;
     }
     //@PreAuthorize("hasAuthority('ROLE_UPPER')")
     @GetMapping("/show/{id}")
     public String showComment(@PathVariable Long id, Principal principal){
-        commentService.enableComment(principal,id);
-        return "redirect:/product/{id}";
+        Long productId = commentService.enableComment(principal,id);
+        return "redirect:/product/"+productId;
     }
 
 }

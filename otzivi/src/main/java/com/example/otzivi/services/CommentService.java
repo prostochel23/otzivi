@@ -76,13 +76,13 @@ public class CommentService {
         commentRepository.save(oldComment);
     }
 //
-    public void disableComment(Principal principal, Long id) {
+    public Long disableComment(Principal principal, Long id) {
         User user = productService.getUserByPrincipal(principal);
         Comment comment = commentRepository.findById(id).orElse(null);
         if (comment == null)
-            return;
+            return (long) 1;
         comment.setActive(false);
-        Product product = productService.getProductById(comment.getProduct().getId());
+        Product product = comment.getProduct();
         product.setTotalAmountOfEstimation(product.getTotalAmountOfEstimation() - 1);
         product.setTotalEstimation(product.getTotalEstimation()-comment.getEstimation());
         if (product.getTotalAmountOfEstimation() == 0)
@@ -91,19 +91,21 @@ public class CommentService {
             product.setRating((float) product.getTotalEstimation() /product.getTotalAmountOfEstimation());
         productRepository.save(product);
         commentRepository.save(comment);
+        return product.getId();
     }
-    public void enableComment(Principal principal, Long id) {
+    public Long enableComment(Principal principal, Long id) {
         User user = productService.getUserByPrincipal(principal);
         Comment comment = commentRepository.findById(id).orElse(null);
         if (comment == null)
-            return;
+            return (long) 1;
         comment.setActive(true);
-        Product product = productService.getProductById(comment.getProduct().getId());
+        Product product = comment.getProduct();
         product.setTotalAmountOfEstimation(product.getTotalAmountOfEstimation() + 1);
         product.setTotalEstimation(product.getTotalEstimation()+comment.getEstimation());
         product.setRating((float) product.getTotalEstimation() /product.getTotalAmountOfEstimation());
         productRepository.save(product);
         commentRepository.save(comment);
+        return product.getId();
     }
     public void deleteComment(Principal principal, Long id){
         User user = productService.getUserByPrincipal(principal);
